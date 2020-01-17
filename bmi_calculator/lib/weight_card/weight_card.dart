@@ -7,8 +7,9 @@ import 'dart:math' as math;
 
 class WeightCard extends StatefulWidget {
   int initialWeight;
+  ValueChanged<int> onChage;
 
-  WeightCard({this.initialWeight});
+  WeightCard({this.initialWeight = 70, this.onChage});
 
   @override
   _WeightCardState createState() => _WeightCardState();
@@ -64,7 +65,10 @@ class _WeightCardState extends State<WeightCard> {
                   minValue: 30,
                   maxValue: 150,
                   value: weight,
-                  onValueChanged: (val) => setState(() => weight = val),
+                  onValueChanged: (val) {
+                    setState(() => weight = val);
+                    widget.onChage(val);
+                  },
                   width: constraints.maxWidth,
                 );
         },

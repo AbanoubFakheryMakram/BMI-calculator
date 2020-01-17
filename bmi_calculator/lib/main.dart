@@ -3,10 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gender_selection/gender_card/gender_card.dart';
 import 'package:gender_selection/weight_card/weight_card.dart';
+import 'package:gender_selection/widgets/input_sammary.dart';
+import 'package:gender_selection/widgets/pacman_slider.dart';
 
 import 'height_card/height_card.dart';
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.white, //top bar color
+    statusBarIconBrightness: Brightness.dark, //top bar icons
+    systemNavigationBarColor: Colors.white, //bottom bar color
+    systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
+  ));
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(MaterialApp(
@@ -22,6 +30,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  GenderType gender = GenderType.male;
+  int height = 170;
+  int weight = 60;
+
   @override
   Widget build(BuildContext context) {
     initScreenSize();
@@ -30,7 +42,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _buildTitle(),
+            InputSummaryCard(
+              gender: gender,
+              weight: weight,
+              height: height,
+            ),
             Expanded(child: _buildCards()),
             _buildBottom(),
           ],
@@ -46,23 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
         width: screenWidth, height: screenHeight, allowFontScaling: true);
   }
 
-  Widget _buildTitle() {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: ScreenUtil().setHeight(24),
-        top: ScreenUtil().setHeight(26),
-      ),
-      child: Text(
-        'BMI Calculator',
-        style: new TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
   Widget _buildCards() {
     return Padding(
       padding: EdgeInsets.only(
-          top: ScreenUtil().setHeight(32),
+          top: ScreenUtil().setHeight(8),
           left: ScreenUtil().setHeight(14),
           right: ScreenUtil().setHeight(14)),
       child: Row(
@@ -72,18 +75,22 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Expanded(
                   child: GenderCard(
-                    initialGender: GenderType.other,
+                    initialGender: GenderType.male,
+                    onChange: (type) => setState(() => gender = type),
                   ),
                 ),
                 Expanded(
-                  child: WeightCard(initialWeight: 60),
-                )
+                    child: WeightCard(
+                  initialWeight: 70,
+                  onChage: (val) => setState(() => weight = val),
+                ))
               ],
             ),
           ),
           Expanded(
             child: HeightCard(
-              height: 130,
+              height: 170,
+              onChanged: (val) => setState(() => height = val),
             ),
           )
         ],
@@ -92,13 +99,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildBottom() {
-    return Container(
-      alignment: Alignment.center,
-      height: ScreenUtil().setHeight(108),
-      child: Switch(
-        value: true,
-        onChanged: (newValue) {},
+    return Padding(
+      padding: EdgeInsets.only(
+        left: ScreenUtil().setHeight(16.0),
+        right: ScreenUtil().setHeight(16.0),
+        bottom: ScreenUtil().setHeight(22.0),
+        top: ScreenUtil().setHeight(14.0),
       ),
+      child: PacmanSlider(),
     );
   }
 }

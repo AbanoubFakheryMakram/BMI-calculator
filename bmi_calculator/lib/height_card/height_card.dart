@@ -5,22 +5,24 @@ import 'dart:math' as math;
 import 'package:gender_selection/widgets/card_title.dart';
 
 class HeightCard extends StatefulWidget {
-  dynamic height; // initial input height
+  int height; // initial input height
 
-  HeightCard({this.height});
+  final ValueChanged<int> onChanged;
+
+  HeightCard({Key key, this.height = 170, this.onChanged}) : super(key: key);
 
   @override
   _HeightCardState createState() => _HeightCardState();
 }
 
 class _HeightCardState extends State<HeightCard> {
-  dynamic height;
+  int height;
 
   @override
   void initState() {
     super.initState();
     height = widget.height ??
-        150; // if no initial height input make the default height = 150 cm
+        170; // if no initial height input make the default height = 170 cm
   }
 
   @override
@@ -33,7 +35,7 @@ class _HeightCardState extends State<HeightCard> {
           children: <Widget>[
             CardTitle(
               title: 'HEIGHT',
-              subtitle: 'CM',
+              subtitle: '(CM)',
             ),
             Expanded(
               child: Padding(
@@ -52,6 +54,7 @@ class _HeightCardState extends State<HeightCard> {
                       height: height,
                       widgetHeight: constriants.maxHeight,
                       onHeightChanged: (newHeight) {
+                        widget.onChanged(newHeight);
                         setState(() {
                           this.height = newHeight;
                         });
@@ -69,11 +72,11 @@ class _HeightCardState extends State<HeightCard> {
 }
 
 class HeightPicker extends StatefulWidget {
-  final dynamic height;
-  final dynamic widgetHeight;
+  final int height;
+  final double widgetHeight;
   final ValueChanged<dynamic> onHeightChanged;
-  final dynamic minHeight;
-  final dynamic maxHeight;
+  final int minHeight;
+  final int maxHeight;
 
   HeightPicker(
       {this.height,
@@ -82,7 +85,7 @@ class HeightPicker extends StatefulWidget {
       this.onHeightChanged,
       this.widgetHeight});
 
-  dynamic get totalUnit => maxHeight - minHeight;
+  int get totalUnit => maxHeight - minHeight;
 
   @override
   _HeightPickerState createState() => _HeightPickerState();
@@ -97,7 +100,7 @@ class _HeightPickerState extends State<HeightPicker> {
   int startDragHeight;
 
   // calculate pixels between each unit will be used in drwaing the picture
-  dynamic get _pixelsPerUnit => _drawingHeight / widget.totalUnit;
+  double get _pixelsPerUnit => _drawingHeight / widget.totalUnit;
 
   // حدود الرسم
   // المسافة اللي فوق واللي تحت وحجم الخط
@@ -129,7 +132,7 @@ class _HeightPickerState extends State<HeightPicker> {
       },
       child: Stack(
         children: <Widget>[
-           _drawPersonImage(),
+          _drawPersonImage(),
           _drawSlider(),
           _drawLabels(),
         ],
@@ -177,9 +180,8 @@ class _HeightPickerState extends State<HeightPicker> {
       child: SvgPicture.asset(
         "assets/person.svg",
         height: personImageHeight,
-        width: (personImageHeight / 3),
+        width: personImageHeight / 3,
       ),
-      
     );
   }
 

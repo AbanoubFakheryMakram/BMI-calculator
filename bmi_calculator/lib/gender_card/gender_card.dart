@@ -17,7 +17,8 @@ enum GenderType { male, female, other }
 class GenderCard extends StatefulWidget {
   @override
   GenderType initialGender;
-  GenderCard({this.initialGender});
+  ValueChanged<GenderType> onChange;
+  GenderCard({this.initialGender = GenderType.male, this.onChange});
 
   _GenderCardState createState() => _GenderCardState();
 }
@@ -36,7 +37,7 @@ class _GenderCardState extends State<GenderCard>
     super.initState();
     selectedGender = widget.initialGender ??
         GenderType
-            .other; // if no gender selected make the default selection is 'other'
+            .male; // if no gender selected make the default selection is 'other'
 
     arrowAnimationController = AnimationController(
         vsync: this,
@@ -112,6 +113,7 @@ class _GenderCardState extends State<GenderCard>
   void _setSelectedGender(GenderType type) {
     setState(() {
       selectedGender = type;
+      widget.onChange(type);
     });
     arrowAnimationController.animateTo(genderAngles[type],
         duration: Duration(milliseconds: 200));

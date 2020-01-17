@@ -9,21 +9,45 @@ class CardTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(text: title, style: _titleStyle, children: [
-        TextSpan(text: subtitle ?? "", style: _subtitleStyle),
-      ]),
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(
+            top: ScreenUtil().setHeight(8),
+            bottom: ScreenUtil().setHeight(8),
+            left: ScreenUtil().setHeight(11),
+            right: ScreenUtil().setHeight(13),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                title,
+                style: _titleStyle,
+              ),
+              Text(
+                subtitle ?? "",
+                style: _subtitleStyle,
+              )
+            ],
+          ),
+        ),
+        Divider(
+          height: 1.0,
+          color: Colors.grey[400],
+        ),
+      ],
     );
   }
 
   TextStyle _titleStyle = TextStyle(
     fontSize: 16.0,
-    fontWeight: FontWeight.w500,
     color: Color.fromRGBO(14, 24, 35, 1.0),
+    fontFamily: 'Baloo'
   );
+
   TextStyle _subtitleStyle = TextStyle(
-    fontSize: 8.0,
-    fontWeight: FontWeight.w500,
-    color: Color.fromRGBO(78, 102, 114, 1.0),
+    fontSize: 11.0,
+    color: Color.fromRGBO(143, 144, 156, 1.0),
   );
 }
