@@ -14,7 +14,7 @@ class InputSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(ScreenUtil().setHeight(16.0)),
+      margin: EdgeInsets.only(top: ScreenUtil().setHeight(16.0), left: ScreenUtil().setHeight(16.0), right: ScreenUtil().setHeight(16.0)),
       child: SizedBox(
         height:ScreenUtil().setHeight(32.0),
         child: Row(

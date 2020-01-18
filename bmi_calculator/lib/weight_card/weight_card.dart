@@ -62,7 +62,7 @@ class _WeightCardState extends State<WeightCard> {
           return constraints.isTight
               ? Container()
               : WeightSlider(
-                  minValue: 30,
+                  minValue: 45,
                   maxValue: 150,
                   value: weight,
                   onValueChanged: (val) {
