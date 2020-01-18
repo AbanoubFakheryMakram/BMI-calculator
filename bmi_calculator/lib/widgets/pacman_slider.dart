@@ -8,6 +8,11 @@ const double _sliderHorizontalMargin = 24.0;
 const double _dotsLeftMargin = 8.0;
 
 class PacmanSlider extends StatefulWidget {
+  VoidCallback onSubmit;
+  AnimationController animationController;
+
+  PacmanSlider({this.onSubmit, this.animationController});
+
   @override
   _PacmanSliderState createState() => _PacmanSliderState();
 }
@@ -16,13 +21,34 @@ class _PacmanSliderState extends State<PacmanSlider>
     with TickerProviderStateMixin {
   double _pacmanPosition = 24.0;
   AnimationController pacmanMovementController;
+  Animation<BorderRadius> borderRadisAnimation;
+  Animation<double> submitWidthAnimation;
   Animation<double> pacmanAnimation;
+
+  double get width =>
+      submitWidthAnimation.value ?? 0.0; //replace field with a getter
 
   @override
   void initState() {
     super.initState();
     pacmanMovementController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+
+    /*
+      start transition animation with changing slider’s borders to be more rounded. 
+      To do that, use BorderRadiusTween which will help us animating from one BorderRadius to another
+     */
+    borderRadisAnimation = BorderRadiusTween(
+      //create BorderRadiusTween
+      begin: BorderRadius.circular(8.0),
+      end: BorderRadius.circular(50.0),
+    ).animate(CurvedAnimation(
+      parent: widget.animationController,
+      /*
+      Interval curve, which means that our border animation will not be run during whole 2 seconds
+       */
+      curve: Interval(0.0, 0.07), //specify interval from 0 to 7%
+    ));
   }
 
   @override
@@ -33,31 +59,53 @@ class _PacmanSliderState extends State<PacmanSlider>
 
   @override
   Widget build(BuildContext context) {
-    Decoration decoration = BoxDecoration(
-      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-      color: Theme.of(context).primaryColor,
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      submitWidthAnimation = Tween<double>(
+        begin: constraints.maxWidth, //start with maximum width
+        end: ScreenUtil().setHeight(52.0), //finish with width equal to height
+      ).animate(CurvedAnimation(
+        parent:
+            widget.animationController, //use the same animation controller...
+        curve: Interval(
+            0.05, 0.15), //... but in different time frame from border animation
+      ));
 
-    return Container(
-      height: ScreenUtil().setHeight(52.0),
-      decoration: decoration,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => _animatePacmanToEnd(width: constraints.maxWidth),
-            child: Stack(
-              alignment: Alignment.centerRight,
-              children: <Widget>[
-                AnimatedDots(),
-                _drawDotCurtain(decoration, width: constraints.maxWidth),
-                _drawPacman(width: constraints.maxWidth),
-              ],
-            ),
+      return AnimatedBuilder(
+        /*
+        AnimatedBuilder will take care of rebuilding the slider everytime AnimationController changes its value
+         */
+        animation: widget.animationController,
+        builder: (context, child) {
+          Decoration decoration = BoxDecoration(
+            borderRadius: borderRadisAnimation.value,
+            color: Theme.of(context).primaryColor,
           );
+
+          return Center(
+              child: Container(
+            width: width, //use new animation width
+            height: ScreenUtil().setHeight(52.0),
+            decoration: decoration,
+            child: submitWidthAnimation.isDismissed
+                ? GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () =>
+                        _animatePacmanToEnd(width: constraints.maxWidth),
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: <Widget>[
+                        AnimatedDots(),
+                        _drawDotCurtain(decoration,
+                            width: constraints.maxWidth),
+                        _drawPacman(width: constraints.maxWidth),
+                      ],
+                    ),
+                  )
+                : Container(),
+          ));
         },
-      ),
-    );
+      );
+    });
   }
 
   Widget _drawDotCurtain(Decoration decoration, {double width = 0.0}) {
@@ -104,7 +152,7 @@ class _PacmanSliderState extends State<PacmanSlider>
   }
 
   _onPacmanSubmited() {
-    //temporary:
+    widget.onSubmit();
     Future.delayed(Duration(seconds: 1), () => _resetPacman());
   }
 

@@ -67,7 +67,7 @@ class _GenderCardState extends State<GenderCard>
               ),
               Padding(
                 padding: EdgeInsets.only(
-                  top: ScreenUtil().setHeight(16),
+                  top: ScreenUtil().setHeight(12),
                 ),
                 child: _drawMainStack(),
               ),

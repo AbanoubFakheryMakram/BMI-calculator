@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gender_selection/gender_card/gender_card.dart';
+import 'package:gender_selection/result_page/result_page.dart';
 import 'package:gender_selection/weight_card/weight_card.dart';
+import 'package:gender_selection/widgets/fade_transition.dart';
 import 'package:gender_selection/widgets/input_sammary.dart';
 import 'package:gender_selection/widgets/pacman_slider.dart';
+import 'package:gender_selection/widgets/transition_dots.dart';
 
 import 'height_card/height_card.dart';
 
@@ -29,7 +32,37 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  // animation controller
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 2));
+
+    _animationController.addStatusListener((status) {
+      //add a listener
+      if (status == AnimationStatus.completed) {
+        _goToResultPage().then((_) =>
+            _animationController.reset()); //reset controller when coming back
+      }
+    });
+  }
+
+  _goToResultPage() async {
+    return Navigator.of(context).push(FadeRoute(
+      //use the FadeRoute
+      builder: (context) => ResultPage(
+        weight: weight,
+        height: height,
+        gender: gender,
+      ),
+    ));
+  }
+
+  // initial data
   GenderType gender = GenderType.male;
   int height = 170;
   int weight = 60;
@@ -37,21 +70,26 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     initScreenSize();
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            InputSummaryCard(
-              gender: gender,
-              weight: weight,
-              height: height,
+    return Stack(
+      children: <Widget>[
+        Scaffold(
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                InputSummaryCard(
+                  gender: gender,
+                  weight: weight,
+                  height: height,
+                ),
+                Expanded(child: _buildCards()),
+                _buildBottom(),
+              ],
             ),
-            Expanded(child: _buildCards()),
-            _buildBottom(),
-          ],
+          ),
         ),
-      ),
+        TransitionDot(animation: _animationController),
+      ],
     );
   }
 
@@ -81,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Expanded(
                     child: WeightCard(
-                  initialWeight: 70,
+                  initialWeight: 60,
                   onChage: (val) => setState(() => weight = val),
                 ))
               ],
@@ -106,7 +144,15 @@ class _MyHomePageState extends State<MyHomePage> {
         bottom: ScreenUtil().setHeight(22.0),
         top: ScreenUtil().setHeight(14.0),
       ),
-      child: PacmanSlider(),
+      child: PacmanSlider(
+        onSubmit: onPacmanSubmit,
+        animationController: _animationController,
+      ),
     );
+  }
+
+  void onPacmanSubmit() {
+    // start the animation whenever the user submitting the slider
+    _animationController.forward();
   }
 }

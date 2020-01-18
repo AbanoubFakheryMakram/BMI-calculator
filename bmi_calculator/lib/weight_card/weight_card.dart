@@ -22,7 +22,7 @@ class _WeightCardState extends State<WeightCard> {
   void initState() {
     super.initState();
     weight = widget.initialWeight ??
-        70; // set the initial weight with 70 if no value passed
+        70; // set the initial weight with 70km if no value has been passed
   }
 
   int get getWeight => weight;
@@ -32,7 +32,7 @@ class _WeightCardState extends State<WeightCard> {
     return Card(
       child: Padding(
         padding: EdgeInsets.only(
-          top: ScreenUtil().setHeight(32),
+          top: ScreenUtil().setHeight(8),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

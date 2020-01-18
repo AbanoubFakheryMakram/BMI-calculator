@@ -29,7 +29,7 @@ class _HeightCardState extends State<HeightCard> {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: EdgeInsets.only(top: ScreenUtil().setHeight(16)),
+        padding: EdgeInsets.only(top: ScreenUtil().setHeight(8)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -173,8 +173,6 @@ class _HeightPickerState extends State<HeightPicker> {
   // ? drawPersonImage
   Widget _drawPersonImage() {
     double personImageHeight = _sliderPosition + marginBottomAdapted();
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>> $_sliderPosition');
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>> $personImageHeight');
     return Align(
       alignment: Alignment.bottomCenter,
       child: SvgPicture.asset(
